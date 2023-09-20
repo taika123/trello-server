@@ -1,9 +1,9 @@
 - Link: Đang update
 
-### Requirements - Thông tin của bộ Code Base này - Chuẩn các phiên bản dưới đây để bắt đầu học: (Semantic Versioning)
+### Requirements - Thông tin của bộ Code Base này
 
 ```
-* nodejs = v18.16.0
+* nodejs = v20.3.1
 * npm = v9.8.1
 * yarn = v1.22.19
 
