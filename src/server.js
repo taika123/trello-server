@@ -1,32 +1,47 @@
 import express from "express";
-import { mapOrder } from "~/utils/sorts.js";
+import { CLOSE_DB, CONNECT_DB, GET_DB } from "./config/mongodb";
+import exitHook from "async-exit-hook";
+import { env } from "./config/environtment";
 
-const app = express();
+const START_SERVER = () => {
+  const app = express();
 
-const hostname = "localhost";
-const port = 3000;
+  app.get("/", async (req, res) => {
+    // console.log(await GET_DB().listCollections().toArray());
+    res.end("<h1>Hello World!</h1><hr>");
+  });
 
-app.get("/", (req, res) => {
-  // Test Absolute import mapOrder
-  console.log(
-    mapOrder(
-      [
-        { id: "id-1", name: "One" },
-        { id: "id-2", name: "Two" },
-        { id: "id-3", name: "Three" },
-        { id: "id-4", name: "Four" },
-        { id: "id-5", name: "Five" },
-      ],
-      ["id-5", "id-4", "id-2", "id-3", "id-1"],
-      "id"
-    )
-  );
-  res.end("<h1>Hello World!</h1><hr>");
-});
+  app.listen(env.APP_PORT, env.APP_HOST, () => {
+    // eslint-disable-next-line no-console
+    console.log(
+      `3. Hello Dev, I am running at http://${env.APP_HOST}:${env.APP_PORT}/ ...`
+    );
+  });
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Hello Dev, I am running at ${hostname}:${port}/`);
-});
+  //exit hook asynchronously
+  //khi app dừng thì bắt sự kiện tắt app với exit hooks
+  exitHook(() => {
+    // console.log(`exiting with signal: ${signal}`);
+    console.log("4. server is shutting down ...");
+    CLOSE_DB();
+    console.log("5. disconnected from server ...");
+  });
+};
 
-// s4RCKN1annn6EOcP
+(async () => {
+  try {
+    console.log("1. connecting to server database ...");
+    await CONNECT_DB();
+    console.log("2. connected mongodb server ...");
+    START_SERVER();
+  } catch (error) {
+    console.error(err), process.exit(0);
+  }
+})();
+
+// CONNECT_DB()
+//   .then(() => console.log("2. connected mongodb server ..."))
+//   .then(() => START_SERVER())
+//   .catch((err) => {
+//     console.error(err), process.exit(0);
+//   });
